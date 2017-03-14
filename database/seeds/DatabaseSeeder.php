@@ -11,6 +11,8 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        // $this->call(UsersTableSeeder::class);
+       //raspored zvanja je bitan!! Prvo role pa onda user seeder koji poziva role unutar sebe :)
+       $this->call(RoleTableSeeder::class);
+       $this->call(UserTableSeeder::class);
     }
 }

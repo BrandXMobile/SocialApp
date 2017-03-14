@@ -4,12 +4,20 @@
 namespace App\Http\Controllers;
 
 use App\Post;
+use App\Like;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 
 class PostController extends Controller
 {
+    public function getDashboard()
+    {
+    	$posts=Post::orderBy('created_at','desc')->get();
+    	return view('dashboard',['posts'=>$posts]);
+    }
+
+
     public function createPost(Request $request)
     {
 		//Validation
@@ -21,9 +29,73 @@ class PostController extends Controller
 		$post->body=$request['body'];
 		$message="Ouups,....error!";
 		if($request->user()->posts()->save($post)){
-			$message="Post cretaed sucessfully!!";
+			$message="Post created sucessfully!!";
 		} 
 
 		return redirect()->route('dashboard')->withMessage($message);
+    }
+
+    public function deletePost($postId)
+    {
+    	$post=Post::where('id',$postId)->first();
+		if(Auth::user()!=$post->user) {
+			return redirect()->back();
+		}   	
+    	$post->delete();
+
+    	return redirect()->route('dashboard')->with(['message'=>'Post successfully deleted..']);
+    }
+
+    public function editPost(Request $request)
+    {
+    	$this->validate($request,[
+    		'body'=>'required'
+    	]);
+
+    	$post=Post::find($request['postId']);
+    	if(Auth::user()!=$post->user) {
+			return redirect()->back();
+		}  
+    	$post->body=$request['body'];
+    	$post->update();
+
+    	return response()->json(['new-body'=>$post->body],200);
+    }
+
+    public function likePost(Request $request){
+    	$post_id= $request['postId'];
+    	$isLike= $request['isLike']=== 'true' ;
+    	$update=false;
+    	$post=Post::find($post_id);
+
+    	if(!$post){
+    		return null;
+    	}
+    	$user=Auth::user();
+
+    	//check is liked
+    	$like=$user->likes()->where('post_id',$post_id)->first();
+
+    	if($like){
+    		$liked=$like->like;
+    		$update=true;
+    		if($liked==$isLike){
+    			$like->delete();
+    			return null;
+    		}
+    	}else{
+    		$like=new Like();
+    	}
+
+    	$like->like=$isLike; 
+    	$like->user_id=$user->id;
+    	$like->post_id=$post->id;
+
+    	if($update){
+    		$like->update();
+    	}else{
+    		$like->save();
+    	}
+    	return null;
     }
 }

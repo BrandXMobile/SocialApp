@@ -39,3 +39,10 @@
 	color:green;
 	background-color:#d1f9da;
 }
+
+#separator {
+    display: inline-block;
+    border-left: 3px solid #34495e;
+    height: 30px;
+    vertical-align: middle;
+}

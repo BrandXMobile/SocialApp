@@ -9,11 +9,21 @@
 		        <span class="icon-bar"></span>
 		        <span class="icon-bar"></span>
 		      </button>
-		      <a class="navbar-brand" href="#">Brand</a>
+		      <a class="navbar-brand" href="{{ route('dashboard')}}"><strong>Dashboard</strong></a>
+		      <a class="navbar-brand" href="{{ route('author') }}">Author</a>
+  			  <a class="navbar-brand" href="{{ route('admin') }}">Admin</a>
 		    </div>
 
 	    	<!-- Collect the nav links, forms, and other content for toggling -->
 		    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+				<ul class="nav navbar-nav navbar-right">
+			        <li><a href="{{ route('account')}}">My Account</a></li>
+			         @if(!Auth::check())
+	                    <li><a href="{{ route('home') }}">Login</a></li>
+	                @else
+			            <li><a href="{{ route('logout')}}">Logout</a></li>
+			        @endif
+			      </ul>
 		    </div><!-- /.navbar-collapse -->
 	  </div><!-- /.container-fluid -->
 	</nav>
